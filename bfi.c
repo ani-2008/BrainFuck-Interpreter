@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 
-char unsigned memory[30000] = {0};
+char memory[30000] = {0};
 unsigned int stackpointer = 0;
 
 int main(int argc, char *argv[])
@@ -37,7 +37,10 @@ int main(int argc, char *argv[])
                     }
                     memory[stackpointer] = c;
                     break;
-                    
+                case '[':
+                    ;
+                case ']':
+                    ;
             }
 
         }
