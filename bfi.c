@@ -7,43 +7,84 @@ unsigned int stackpointer = 0;
 int main(int argc, char *argv[])
 {
 
-    char bfc[1024];
     FILE *fp;
     fp = fopen(argv[1],"r");
 
-    while(fgets(bfc,sizeof(bfc),fp) != NULL){
-        for(int i = 0; i < strlen(bfc); i++){
-            switch (bfc[i]){
-                case '+':
-                    memory[stackpointer]++;
-                    break;
-                case '-':
-                    memory[stackpointer]--;
-                    break;
-                case '>':
-                    stackpointer++;
-                    break;
-                case '<':
-                    stackpointer--;
-                    break;
-                case '.':
-                    printf("%c",memory[stackpointer]);
-                    break;
-                case '$':
-                    char c; 
-                    c = getchar();
-                    if (c == EOF){
-                        c = 0;
+    char instruction[65535];
+    char c;
+    int i = 0; 
+    int depth = 0;
+    while ((c = fgetc(fp)) != EOF && i != 65535){
+        if (c == '+' || c == '-' || c == '<' || c == '>' || c == '.' || c == ',' || c == '[' || c == ']'){
+            instruction[i] = c;
+            i++;
+        }
+        
+    }
+    instruction[i++] = '\0'; 
+    int in_ptr;
+    for(in_ptr = 0; in_ptr < strlen(instruction); in_ptr++){
+        switch (instruction[in_ptr]){
+            case '+':
+                memory[stackpointer]++;
+                break;
+            case '-':
+                memory[stackpointer]--;
+                break;
+            case '>':
+                stackpointer++;
+                break;
+            case '<':
+                stackpointer--;
+                break;
+            case '.':
+                printf("%c",memory[stackpointer]);
+                break;
+            case ',':
+                char inp; 
+                inp = getchar();
+                if (inp == EOF){
+                    inp = 0;
+                }
+                memory[stackpointer] = inp;
+                break;
+            case '[':
+                if(memory[stackpointer] == 0){
+                    
+                    int depth = 1;
+                    while(depth > 0){
+                        in_ptr++;
+                        c = instruction[in_ptr];
+                        if (c == '\0'){
+                            printf("INVALID\n");
+                            return 1;
+                        }else if(c == '['){
+                            depth++;
+                        }else if(c == ']'){
+                            depth--;
+                        }
+                       in_ptr++;
                     }
-                    memory[stackpointer] = c;
-                    break;
-                case '[':
-                    ;
-                case ']':
-                    ;
+                }
+                break;
+            case ']':
+                if(memory[stackpointer] != 0){
+                    
+                    int depth = 1;
+                    while(depth > 0){
+                        in_ptr--;
+                        c = instruction[in_ptr];
+                        if (c == '['){
+                            depth--;
+                        }else if (c == ']'){
+                            depth++;
+                        }
+                        
+                    }
+                }
+                break;
             }
 
         }
-    }
-}
 
+}
